@@ -34,8 +34,8 @@ If not we have some debugging to do.
 The contents of the `end-to-end` directory show a more realistic example of multi-gpu work on Outerbounds.
 You will discover these features:
 - Configuring Metaflow workflows
-- Configuring PyTorch scripts with Hydra, so they work cleanly with Metaflow
-- Storing checkpointing's in a persistent, fault tolerant manner
+- Configuring PyTorch scripts with Hydra, so they work cleanly with Metaflow and directly with torchrun
+- Storing checkpoints in a persistent, fault tolerant manner
 - Building images for Metaflow task runtimes
 
 ```bash
@@ -46,6 +46,18 @@ cd end-to-end
 
 Go to `end-to-end/conf/metaflow_config.json`. 
 Set up resources according to your Outerbounds compute pool, and set the name of your compute pool.
+
+### Investigate torch configs
+
+Next, view the configurations that will be passed into your torch script via Hydra.
+They exist in these locations:
+```bash
+end-to-end/conf/pytorch_train_config.yaml
+end-to-end/conf/pytorch_eval_config.yaml
+```
+
+You will need to update the wandb sections to your
+
 
 ### Training independent of Metaflow
 ```bash
