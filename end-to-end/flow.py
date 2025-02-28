@@ -41,7 +41,7 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
     @gpu_profile(interval=5)
     @model
     @checkpoint
-    @secrets(sources=[...]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
+    # @secrets(sources=[...]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
     @kubernetes(**config.train_resources)
     @step
     def train(self):
@@ -64,8 +64,8 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
                 # When train script uses Hydra configs, use list syntax as follows.
                 "metaflow.use_metaflow=true",
                 "metaflow.checkpoint_in_remote_datastore=true",
-                "wandb.use_wandb=true",
-                "wandb.project=bert-multi-gpu"
+                # "wandb.use_wandb=true",
+                # "wandb.project=bert-multi-gpu"
             ],
         )
         self.bert_model = current.model.save(
@@ -83,7 +83,7 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
     @gpu_profile(interval=5)
     @card
     @model(load="bert_model")
-    @secrets(sources=[...]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
+    # @secrets(sources=[...]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
     @kubernetes(**config.eval_resources)
     @step
     def eval(self):
@@ -109,8 +109,8 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
                 "metaflow.use_metaflow=true",
                 f"model_path={final_model_path}",
                 f"output_file={eval_results_filepath}",
-                "wandb.use_wandb=true",
-                "wandb.project=bert-multi-gpu"
+                # "wandb.use_wandb=true",
+                # "wandb.project=bert-multi-gpu"
             ],
         )
         self.eval_results = load_evaluation_results(eval_results_filepath)
