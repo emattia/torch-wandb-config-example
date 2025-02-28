@@ -1,3 +1,10 @@
+## Set up your local environment
+
+In your Python virtual environment run this command:
+```bash
+pip install outerbounds metaflow-torchrun
+```
+
 ## Getting started and validating your setup
 
 To validate your Metaflow set up, navigate to the test directory:
@@ -34,6 +41,11 @@ You will discover these features:
 ```bash
 cd end-to-end
 ```
+
+### Investigate the flow config
+
+Go to `end-to-end/conf/metaflow_config.json`. 
+Set up resources according to your Outerbounds compute pool, and set the name of your compute pool.
 
 ### Training independent of Metaflow
 ```bash

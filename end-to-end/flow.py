@@ -2,7 +2,9 @@ from metaflow import (
     FlowSpec,
     step,
     resources,
+    kubernetes,
     Config,
+    IncludeFile,
     checkpoint,
     model,
     current,
@@ -10,11 +12,23 @@ from metaflow import (
     card
 )
 from metaflow.profilers import gpu_profile
+import os
+import yaml
 
 
 class BertTrainingSingleNodeMultiGPU(FlowSpec):
 
     config = Config("config", default="conf/metaflow_config.json")
+    train_config = IncludeFile(
+        name="train_conf",
+        required=True,
+        default="conf/pytorch_train_config.yaml"
+    )
+    eval_config = IncludeFile(
+        name="eval_conf",
+        required=True,
+        default="conf/pytorch_eval_config.yaml"
+    )
 
     @step
     def start(self):
@@ -27,13 +41,17 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
     @gpu_profile(interval=5)
     @model
     @checkpoint
-    # @secrets(sources=["..."]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
-    @resources(gpu=config.train_resources.gpu)
+    @secrets(sources=[...]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
+    @kubernetes(**config.train_resources)
     @step
     def train(self):
-        import yaml
         from metaflow import TorchrunSingleNodeMultiGPU
 
+        os.makedirs('conf', exist_ok=True)
+        with open("conf/pytorch_train_config.yaml", "w") as f:
+            f.write(self.train_config)
+
+        # validate config is saved correctyl, and load for use in Metaflow step code.
         with open("conf/pytorch_train_config.yaml", "r") as f:
             torch_cfg = yaml.safe_load(f)
 
@@ -46,6 +64,8 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
                 # When train script uses Hydra configs, use list syntax as follows.
                 "metaflow.use_metaflow=true",
                 "metaflow.checkpoint_in_remote_datastore=true",
+                "wandb.use_wandb=true",
+                "wandb.project=bert-multi-gpu"
             ],
         )
         self.bert_model = current.model.save(
@@ -63,12 +83,15 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
     @gpu_profile(interval=5)
     @card
     @model(load="bert_model")
-    # @secrets(sources=["..."]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
-    @resources(gpu=config.eval_resources.gpu)
+    @secrets(sources=[...]) ### TODO: On Outerbounds, configure your wandb secret via resource integration.
+    @kubernetes(**config.eval_resources)
     @step
     def eval(self):
-        import os
         from metaflow import TorchrunSingleNodeMultiGPU
+
+        os.makedirs('conf', exist_ok=True)
+        with open("conf/pytorch_eval_config.yaml", "w") as f:
+            f.write(self.eval_config)
 
         final_model_path = os.path.join(
             current.model.loaded["bert_model"],
@@ -86,6 +109,8 @@ class BertTrainingSingleNodeMultiGPU(FlowSpec):
                 "metaflow.use_metaflow=true",
                 f"model_path={final_model_path}",
                 f"output_file={eval_results_filepath}",
+                "wandb.use_wandb=true",
+                "wandb.project=bert-multi-gpu"
             ],
         )
         self.eval_results = load_evaluation_results(eval_results_filepath)

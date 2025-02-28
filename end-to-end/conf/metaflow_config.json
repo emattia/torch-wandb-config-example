@@ -1,8 +1,14 @@
 {
     "train_resources": {
-        "gpu": 8
+        "gpu": 4,
+        "image": "docker.io/eddieob/bert-gpu-example",
+        "compute_pool": "obp-gpu-mega-non-spot",
+        "shared_memory": 4000
     },
     "eval_resources": {
-        "gpu": 1
+        "gpu": 1,
+        "image": "docker.io/eddieob/bert-gpu-example",
+        "compute_pool": "obp-gpu-mega-non-spot",
+        "shared_memory": 2000
     }
 }

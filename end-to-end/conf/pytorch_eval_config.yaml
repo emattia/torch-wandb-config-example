@@ -8,8 +8,6 @@ model:
   max_length: 128
   class_names: ["negative", "positive"]  # Optional class names for reports
 
-batch_size: 32
-num_workers: 4
 seed: 42
 detailed_evaluation: true
 output_file: "evaluation_results.json"
@@ -34,8 +32,8 @@ metaflow:
   use_metaflow: false
 
 wandb:
-  use_wandb: false
+  use_wandb: true
   project: "bert-multi-gpu"
-  entity: null  # Set to your wandb username or team name
+  entity: "eddiem"  # Set to your wandb username or team name
   name: null  # Auto-generated if null
 # TODO: Metaflow @secrets X Outerbounds wandb resource integration for managing keys.

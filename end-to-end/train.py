@@ -94,8 +94,12 @@ def main(cfg: DictConfig):
             name=run_name,
             config=wandb_config,
         )
+        print('[train.py] wandb initialized!')
 
         wandb.watch(model, log="all", log_freq=100)
+    
+    else:
+        print('[train.py] wandb not initialized!')
 
     if cfg.metaflow.checkpoint_in_remote_datastore:
         checkpoint = Checkpoint(init_dir=True)

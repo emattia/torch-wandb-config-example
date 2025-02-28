@@ -324,6 +324,30 @@ def main(cfg: DictConfig):
     model.eval()
     test_loader = load_data(tokenizer, cfg, val_only=True)
     criterion = torch.nn.CrossEntropyLoss()
+
+        # TODO: Log any parameters you'd like to see in wandb.
+    if cfg.wandb.use_wandb and cfg.distributed.rank == 0:
+        wandb_config = {
+            "model_name": cfg.model.model_name,
+            "batch_size": cfg.eval.batch_size,
+            "num_gpus": cfg.distributed.world_size,
+            "seed": cfg.seed,
+        }
+
+        run_name = (
+            cfg.wandb.name
+            if cfg.wandb.name
+            else f"bert-{cfg.model.model_name.split('/')[-1]}-bs{cfg.eval.batch_size}"
+        )
+        wandb.init(
+            project=cfg.wandb.project,
+            entity=cfg.wandb.entity,
+            name=run_name,
+            config=wandb_config,
+        )
+
+        wandb.watch(model, log="all", log_freq=100)
+
     val_loss, val_acc = validate(model, test_loader, criterion, cfg, epoch=0)
 
     if cfg.distributed.rank == 0:
