@@ -32,7 +32,7 @@ metaflow:
   use_metaflow: false
 
 wandb:
-  use_wandb: true
+  use_wandb: false
   project: "bert-multi-gpu"
   entity: "eddiem"  # Set to your wandb username or team name
   name: null  # Auto-generated if null
