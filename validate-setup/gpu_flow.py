@@ -1,12 +1,11 @@
-from metaflow import FlowSpec, step, resources, pypi
+from metaflow import FlowSpec, step, kubernetes, pypi
 
 class GPUTestFlow(FlowSpec):
 
-    @pypi(packages={"torch": ""})
-    @resources(gpu=1)
+    @kubernetes(gpu=1, image="docker.io/eddieob/bert-gpu-example")
     @step
     def start(self):
-        import torch
+        import torch # pylint: disable=import-error
 
         if torch.cuda.is_available():
             print('Happy days!')
