@@ -1,0 +1,8 @@
+{
+    "train_resources": {
+        "gpu": 8
+    },
+    "eval_resources": {
+        "gpu": 1
+    }
+}

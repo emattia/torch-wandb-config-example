@@ -1,0 +1,41 @@
+# Evaluation configuration
+
+# Model settings
+model_path: "./output/best_model.pth"  # Path to the saved model
+model:
+  model_name: "bert-base-uncased"
+  num_classes: 2
+  max_length: 128
+  class_names: ["negative", "positive"]  # Optional class names for reports
+
+batch_size: 32
+num_workers: 4
+seed: 42
+detailed_evaluation: true
+output_file: "evaluation_results.json"
+
+data:
+  test_size: 5000  # Number of samples to use for testing (0 = all)
+  dataset_name: "imdb"  # Dataset to use
+
+eval:
+  batch_size: 16
+  num_workers: 4
+
+use_distributed: false  # Set to true to use distributed evaluation
+distributed:
+  local_rank: 0
+  rank: 0
+  world_size: 1
+  backend: "nccl"
+
+# Include metaflow config for compatibility with training
+metaflow:
+  use_metaflow: false
+
+wandb:
+  use_wandb: false
+  project: "bert-multi-gpu"
+  entity: null  # Set to your wandb username or team name
+  name: null  # Auto-generated if null
+# TODO: Metaflow @secrets X Outerbounds wandb resource integration for managing keys.

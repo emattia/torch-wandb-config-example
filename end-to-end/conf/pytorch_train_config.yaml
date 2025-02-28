@@ -1,0 +1,39 @@
+seed: 42
+
+distributed:
+  local_rank: -1
+  rank: 0
+  world_size: 1
+  backend: "nccl"
+
+model:
+  model_name: "bert-base-uncased"
+  num_classes: 2
+  max_length: 128
+
+training:
+  batch_size: 16
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  epochs: 2
+  save_every: 1 # 1 --> save every epoch, 2 --> every other, etc.
+  max_samples: 10000  # Set to 0 to use all data.
+  num_workers: 4
+  output_dir: "./output"
+  best_is_latest: False # Set best model as latest model.
+
+eval:
+  batch_size: 16
+  num_workers: 4
+
+wandb:
+  use_wandb: false
+  project: "bert-multi-gpu"
+  entity: null  # Set to your wandb username or team name
+  name: null  # Auto-generated if null
+# TODO: Metaflow @secrets X Outerbounds wandb resource integration for managing keys.
+
+metaflow:
+  use_metaflow: false
+  checkpoint_in_remote_datastore: false
+  final_model_path: "./output/final_model.pth"
